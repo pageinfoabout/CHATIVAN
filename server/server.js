@@ -43,7 +43,7 @@ app.use('/api/credits', creditRouter)
 
 const PORT = process.env.PORT || 3000
 
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
 
-export default function handler(req, res) {
-    return app(req, res); // let @vercel/node handle the serverless request
-  }
+
+export default app
