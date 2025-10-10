@@ -43,4 +43,5 @@ app.use('/api/credits', creditRouter)
 
 const PORT = process.env.PORT || 3000
 
-export default app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
+export default app
