@@ -6,12 +6,16 @@ import userRouter from './routes/userRoutes.js'
 import chatRouter from './routes/ChatRoutes.js'
 import messageRouter from './routes/messageRoutes.js'
 import creditRouter from './routes/creditRoutes.js'
+import { webhooks } from './controllers/webhooks.js'
 
 dotenv.config()
 
 const app = express()
 await connectDB()
- 
+
+
+//webhooks
+app.post('/api/webhooks', express.raw({type: 'application/json'}), webhooks) 
 
 // middleware
 
@@ -27,6 +31,4 @@ app.use('/api/chat', chatRouter)
 app.use('/api/message', messageRouter)
 app.use('/api/credits', creditRouter)
 
-const PORT = process.env.PORT || 3000
-
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
+export default app
