@@ -7,7 +7,7 @@ import chatRouter from './routes/ChatRoutes.js'
 import messageRouter from './routes/messageRoutes.js'
 import creditRouter from './routes/creditRoutes.js'
 import { webhooks } from './controllers/webhooks.js'
-import connectDB from './configs/db.js'
+
 
 
 dotenv.config()
@@ -15,13 +15,6 @@ dotenv.config()
 const app = express()
 await connectDB()
 
-let dbReady = false
-app.use(async(req, res, next) => {
-    if(dbReady){ connectDB()
-        dbReady = true}
-        next()
-    
-})
 
 //webhooks
 app.post('/api/webhooks', express.raw({type: 'application/json'}), webhooks) 
@@ -42,4 +35,4 @@ app.use('/api/credits', creditRouter)
 
 const PORT = process.env.PORT || 3000
 
-export default app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
