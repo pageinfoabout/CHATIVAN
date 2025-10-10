@@ -16,8 +16,8 @@ const app = express()
 await connectDB()
 
 let dbReady = false
-app.use((req, res, next) => {
-    if(dbReady){ await connectDB()
+app.use(async(req, res, next) => {
+    if(dbReady){ connectDB()
         dbReady = true}
         next()
     
@@ -42,4 +42,4 @@ app.use('/api/credits', creditRouter)
 
 const PORT = process.env.PORT || 3000
 
-export default app
+export default app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
