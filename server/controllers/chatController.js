@@ -1,5 +1,6 @@
 import Chat from '../models/Chat.js'
 
+
 //api to create a new chat
 export const createChat = async (req, res) => {
     try {
@@ -41,7 +42,7 @@ export const deleteChat = async (req, res) => {
 
     try {
         const userId = req.user._id;
-        const chatId = req.params.id;
+        const {chatId} = req.body;
 
         await Chat.deleteOne({ _id: chatId, userId });
         res.json({ success: true, message: 'Chat deleted successfully' })

@@ -2,6 +2,7 @@ import User from '../models/User.js'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import dotenv from 'dotenv'
+import Chat from '../models/Chat.js'
 
 
 
@@ -11,7 +12,7 @@ dotenv.config()
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' })
 }
-
+ 
 
 
 //api to register a user

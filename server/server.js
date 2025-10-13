@@ -7,7 +7,7 @@ import chatRouter from './routes/chatRoutes.js'
 import messageRouter from './routes/messageRoutes.js'
 import creditRouter from './routes/creditRoutes.js'
 import { webhooks } from './controllers/webhooks.js'
-import imagekit from './configs/imagekit.js'
+
 
 
 
@@ -33,7 +33,7 @@ app.get('/', (req, res) => res.send('Server is running'))
 app.use('/api/user', userRouter)
 app.use('/api/chat', chatRouter)
 app.use('/api/message', messageRouter)
-app.use('/api/credits', creditRouter)
+app.use('/api/credit', creditRouter)
 
 const PORT = process.env.PORT || 3000
 

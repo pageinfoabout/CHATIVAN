@@ -4,12 +4,18 @@ import { assets } from '../assets/assets'
 import Message from './Message'
 import { useRef } from 'react'
 
+
+
+
+import toast from 'react-hot-toast'
+
+
 const ChatBox = () => {
 
   const containerRef = useRef(null)
 
 
-  const { selectedChat, theme } = useAppContext()
+  const { selectedChat, theme, user, axios, token, setUser} = useAppContext()
   
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(false)
@@ -20,6 +26,34 @@ const ChatBox = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault()
+    try {
+      if(!user) return toast.error('Please login to generate image');
+      
+      const promptcopy = prompt;
+      setPrompt('');
+      setMessages(prev => [...prev, {role: 'user', content: prompt, timestamp: Date.now(), isImage: false, }]);
+      setLoading(true);
+      
+      const {data} = mode === 'image' ? await axios.post(`/api/message/image`, {chatId: selectedChat._id, prompt: promptcopy, isPublished}, {headers: {Authorization:token}}) : (mode === 'text' ? await axios.post(`/api/message/text`, {chatId: selectedChat._id, prompt: promptcopy}, {headers: {Authorization:token}}) : null)
+      console.log(data)
+      
+      if(data.success){
+        setMessages(prev => [...prev, data.reply])
+        if (mode === 'image'){
+          setUser(prev => ({...prev, credits: prev.credits - 2}))
+        }else{
+          setUser(prev => ({...prev, credits: prev.credits - 1}))
+        }
+      }else{
+        toast.error(data.message);
+        setPrompt(promptcopy);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }finally{
+      setPrompt('');
+      setLoading(false);
+    } 
   }
     
 
@@ -61,10 +95,10 @@ const ChatBox = () => {
           {/* Three Dots Loading */}
           
           {loading && 
-            <div className='mt-3 flex items-center gap-2'>
-            <div className='w-1.5 h-1.5 rounded-full bg-grey-500 dark:bg-purple-400 animate-bounce'></div>
-            <div className='w-1.5 h-1.5 rounded-full bg-grey-500 dark:bg-purple-400 animate-bounce'></div>
-            <div className='w-1.5 h-1.5 rounded-full bg-grey-500 dark:bg-purple-400 animate-bounce'></div>
+            <div className='loader mt-3 flex items-center gap-2'>
+            <div className='w-1.5 h-1.5 rounded-full bg-[#b8b8b8] dark:bg-purple-400 animate-bounce'></div>
+            <div className='w-1.5 h-1.5 rounded-full bg-[#b8b8b8] dark:bg-purple-400 animate-bounce'></div>
+            <div className='w-1.5 h-1.5 rounded-full bg-[#b8b8b8] dark:bg-purple-400 animate-bounce'></div>
             </div>
             
              

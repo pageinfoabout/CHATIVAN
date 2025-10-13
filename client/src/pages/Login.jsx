@@ -1,4 +1,19 @@
 import React, { useState } from 'react'
+import { useAppContext } from '../context/AppContext'
+import toast from 'react-hot-toast'
+
+// --- catch ALL console logs and errors ---
+const originalConsole = { ...console };
+const allLogs = [];
+
+['log', 'warn', 'error', 'info', 'debug'].forEach(level => {
+  console[level] = function(...args) {
+    allLogs.push({ level, args, time: new Date() });
+    originalConsole[level].apply(console, args);
+  };
+});
+
+console.log('Console logging is enabled');
 
 const Login = () => {
   
@@ -6,10 +21,31 @@ const Login = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const {axios, setToken} = useAppContext()
+  
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(name, email, password);
+    const url = state === "login" ? "/api/user/login" : "/api/user/register"
+
+    try {
+        const {data} = await axios.post(url, {name, email, password})
+        if(data.success){
+            setToken(data.token)
+            localStorage.setItem('token', data.token)
+            console.log(data)
+        }else{
+            toast.error(data.message)
+            console.log(data)
+        }
+        
+    } catch (error) {
+        toast.error(error.message)
+        console.log(error)
+        
+    }
+    console.log(error)
   }
 
   return (

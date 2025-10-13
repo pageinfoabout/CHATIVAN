@@ -1,8 +1,10 @@
 import Chat from '../models/Chat.js'
 import User from '../models/User.js'
-import axios from 'axios'
+
 import imagekit from '../configs/imagekit.js'
 import openai from '../configs/openai.js'
+
+const MEMORY_WINDOW = Number(process.env.CHAT_MEMORY_WINDOW || 10) // 5–10 is typical
 
 //text-based message
 export const textMessageController = async (req, res) => {
@@ -22,6 +24,11 @@ export const textMessageController = async (req, res) => {
           content: prompt, 
           timestamp: Date.now(), 
           isImage: false})
+        
+        const history = chat.messages
+        .filter(m => m.role === 'user')
+        .slice(-MEMORY_WINDOW)
+        .map(m => ({role: m.role, content: m.content}))
 
     
       const completion = await openai.chat.completions.create({
@@ -31,20 +38,14 @@ export const textMessageController = async (req, res) => {
             role: 'user',
             content: prompt
           },
+          ...history
         ],
       });
       console.log(completion);
       console.log(completion?.choices?.[0]?.message?.content);
       
 
-      await axios.post(generatedImageUrl, {
-        body: JSON.stringify(completion),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      console.log(aiImageResponse);
-    
+      
      
     
 
@@ -120,6 +121,7 @@ export const imageMessageController = async (req, res) => {
       imageUrl = dataUrl; // if provider already gave an http(s) url
     }
     
+    const publish = isPublished === true || isPublished === 'true';
     if (!imageUrl) return res.json({ success: false, message: 'Model returned no image' });
     
     const reply = {
@@ -127,7 +129,7 @@ export const imageMessageController = async (req, res) => {
       content: imageUrl,
       timestamp: Date.now(),
       isImage: true,
-      isPublished
+      isPublished: publish,
     };
     
     res.json({ success: true, message: 'Image generated successfully', reply });
