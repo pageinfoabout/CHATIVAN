@@ -1,9 +1,18 @@
-import { YooCheckout } from '@a2seven/yoo-checkout';
+import YooKassa from 'yookassa'
 
-const checkout = new YooCheckout({ shopId: process.env.YOOKASSA_SHOP_ID, secretKey: process.env.YOOKASSA_SECRET_KEY});
-try {
-    const webHookList = await checkout.getWebHookList();
-    console.log(webHookList)
-} catch (error) {
-     console.error(error);
+
+export const webhooks = async (req, res) => {
+    try {
+        const yookassa = new YooKassa({
+            shopId: process.env.YOOKASSA_SHOP_ID,
+            secretKey: process.env.YOOKASSA_SECRET_KEY
+        })
+        console.log(yookassa)
+    } catch (error) {
+        console.log(error)
+    }
+
+    res.json({ success: true, message: 'Webhook received' })
+    
+    
 }
