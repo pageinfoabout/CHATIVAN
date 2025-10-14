@@ -11,11 +11,13 @@ export const webhooks = async (req, res) => {
     } catch (e) {
         return res.status(400).send('Invalid JSON')
     }
+    console.log(payload)
 
     const yookassa = new YooKassa({
         shopId: process.env.YOOKASSA_SHOP_ID,
         secretKey: process.env.YOOKASSA_SECRET_KEY
     })
+    console.log(yookassa)
 
     const event = payload?.event
     const paymentObject = payload?.object
@@ -31,11 +33,13 @@ export const webhooks = async (req, res) => {
         const transactionId = payment?.metadata?.transactionId
         if (!transactionId) {
             return res.status(200).end()
+            console.log('Transaction ID not found')
         }
 
         const tx = await Transaction.findById(transactionId)
         if (!tx) {
             return res.status(200).end()
+            console.log('Transaction not found')
         }
 
         if (payment.status === 'succeeded' && !tx.isPaid) {
@@ -52,8 +56,8 @@ export const webhooks = async (req, res) => {
 
         return res.status(200).end()
     } catch (err) {
-        console.error('Webhook handling error:', err?.message || err)
+        return res.status(500).json({ success: false, message: err.message })
         // Acknowledge anyway to prevent repeated retries; log for diagnostics
-        return res.status(200).end()
+       
     }
 }
