@@ -1,20 +1,10 @@
-import YooKassa from 'yookassa'
+import { YooCheckout } from '@a2seven/yoo-checkout';
+import token from '../middlewares/auth.js'
 
-import Transaction from '../models/Transaction.js'
-import User from '../models/User.js'
-
-
-
-
-    
-export const webhooks = async (req, res) => {
-    const yookassa = new YooKassa({
-        shopId: process.env.YOOKASSA_SHOP_ID,
-        secretKey: process.env.YOOKASSA_SECRET_KEY
-    })
-    const signature = req.headers['x-yookassa-signature'];
-    console.log(yookassa)
-    console.log(signature)
-    console.log(req.headers)
-    console.log(req.body)
+const checkout = new YooCheckout({ shopId: process.env.YOOKASSA_SHOP_ID, secretKey: process.env.YOOKASSA_SECRET_KEY, token: token });
+try {
+    const webHookList = await checkout.getWebHookList();
+    console.log(webHookList)
+} catch (error) {
+     console.error(error);
 }
