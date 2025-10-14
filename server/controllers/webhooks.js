@@ -1,7 +1,7 @@
-import YooKassa from 'yookassa'
+import { Webhooks, Configuration } from 'yookassa'
+
 import Transaction from '../models/Transaction.js'
 import User from '../models/User.js'
-
 
 
 
@@ -21,3 +21,33 @@ export const webhooks = async (req, res) => {
     console.log(req.headers)
     console.log(req.body)
 }
+const configuration = new Configuration({
+    events: [
+        'payment.succeeded',
+        'payment.failed',
+        'payment.partially_succeeded',
+        'payment.canceled',
+        'payment.expired',
+        'payment.waiting_for_capture',
+    ]
+})
+const webhooks = new Webhooks(configuration)
+webhooks.on('payment.succeeded', (event) => {
+    console.log(event)
+})
+webhooks.on('payment.failed', (event) => {
+    console.log(event)
+})
+webhooks.on('payment.partially_succeeded', (event) => {
+    console.log(event)
+})
+webhooks.on('payment.canceled', (event) => {
+    console.log(event)
+})
+webhooks.on('payment.expired', (event) => {
+    console.log(event)
+})
+webhooks.on('payment.waiting_for_capture', (event) => {
+    console.log(event)
+})
+console.log(webhooks)
