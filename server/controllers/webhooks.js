@@ -19,37 +19,38 @@ export const webhooks = async (req, res) => {
     } 
     console.log(payload) 
     try {
-        switch (event.type) {
-            case 'payment.succeeded':{
-                const payment = payload.object
-                const transactionId = payment.metadata.transactionId
-                const appId = payment.metadata.appId
-                if(appId !== 'ivanchat'){
-                    const transaction = await Transaction.findOne({ _id: transactionId, isPaid: false })
+        // Verify with YooKassa (don’t trust webhook blindly)
+        const payment = await yookassa.getPayment(paymentObject.id)
 
+        // Use metadata you set during creation
+        const transactionId = payment?.metadata?.transactionId
+        const appId = payment?.metadata?.appId
 
-                    await User.updateOne({ _id: transaction.userId }, { $inc: { credits: transaction.credits } })
-                    transaction.isPaid = true
-                    await transaction.save()
-                    
-                }else{
-                    return response.json({ success: true, message: 'ignored' })
-                   
-                
-            } console.log(error.message)
-            
-                
-                break;
+        // Ignore unrelated events
+        if (appId !== 'ivanchat' || !transactionId) {
+            return res.status(200).end()
+        }
+
+        const tx = await Transaction.findById(transactionId)
+        if (!tx) {
+            return res.status(200).end()
+        }
+
+        // Apply credits on success; only once
+        if (payment.status === 'succeeded' && !tx.isPaid) {
+            // Transaction.credits is a String in your schema; convert for $inc
+            const inc = Number(tx.credits) || 0
+
+            await Transaction.findByIdAndUpdate(transactionId, { isPaid: true })
+            if (inc > 0) {
+                await User.findByIdAndUpdate(tx.userId, { $inc: { credits: inc } })
             }
-            default:
-                console.log('ignored')
-                break;
-        } return response.json({ success: true,})
-    } catch (error) {
-        console.log(error)
-        return response.json({ success: false, message: error.message })
+        }
+
+        return res.status(200).end()
+    } catch (err) {
+        console.error('Webhook error:', err?.message || err)
+        // Acknowledge to prevent retries; keep logs for investigation
+        return res.status(200).end()
     }
-    
-
 }
-
