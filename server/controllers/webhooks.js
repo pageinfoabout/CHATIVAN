@@ -29,18 +29,31 @@ export const webhooks = async (req, res) => {
                 const transaction = await Transaction.findOne({ _id: transactionId, isPaid: false })
                 
                 await User.updateOne({ _id: transaction.userId }, { $inc: { credits: transaction.credits } })
+                try {
+                    transaction.isPaid = true
+                    await transaction.save()
+                   
+                    return res.json({ success: true })
+                } catch (error) {
+                    console.log(error.message)
+                    
+                }
 
-                transaction.isPaid = true
-                await transaction.save()
+                
+                
+                
+                    
                 
             }else{
-                return res.json({ success: true, message: 'ignored' })
+                return res.json({ success: true })
             }
             break;
                 
             }
         }
-        return res.json({ success: true, message: 'ignored' })
+        return res.json({ success: true})
+
+        
             
     } catch (error) {
         console.log(error)
