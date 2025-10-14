@@ -96,8 +96,13 @@ export const buyPlan = async (req, res) => {
               return_url: `${origin}/loading`
             },
             capture: true,
-            description: `Purchase of ${plan.name} plan`
+            description: `Purchase of ${plan.name} plan`,
+            metadata: {
+                transactionId: transaction._id.toString(),
+                appId: "ivanchat"
+            }
         });
+        console.log(payment)
 
         res.json({ success: true, message: 'Plan bought successfully', payment })
             
