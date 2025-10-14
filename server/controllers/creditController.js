@@ -95,6 +95,7 @@ export const buyPlan = async (req, res) => {
               type: "redirect",
               return_url: `${origin}/loading`
             },
+            capture: true,
             description: `Purchase of ${plan.name} plan`
         });
 
