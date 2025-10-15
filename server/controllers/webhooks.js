@@ -23,8 +23,8 @@ export const webhooks = async (req, res) => {
             case 'payment.succeeded':{
                 console.log(payload.event)
 
-                const transactionId = payload.event.metadata
-                const appId = payload.event.metadata
+                const transactionId = payload.metadata.transactionId
+                const appId = payload.metadata.appId
 
 
                 console.log(transactionId)
