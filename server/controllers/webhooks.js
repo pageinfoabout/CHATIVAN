@@ -22,10 +22,13 @@ export const webhooks = async (req, res) => {
         switch (payload.event) {
             case 'payment.succeeded':{
                 console.log(payload.event)
-                
+
+                const transactionId = payload.event.metadata
+                const appId = payload.event.metadata
+
             
 
-                if(appId !== 'ivanchat'){
+                if(appId === 'ivanchat'){
                 const transaction = await Transaction.findOne({ _id: transactionId, isPaid: false })
                 
                 await User.updateOne({ _id: transaction.userId }, { $inc: { credits: transaction.credits } })
