@@ -33,43 +33,33 @@ export const webhooks = async (req, res) => {
                 console.log(transactionId)
                 console.log(appId)
 
-            
-
                 if(appId === 'ivanchat'){
-                const transaction = await Transaction.findOne({ _id: transactionId, isPaid: false })
-                console.log(transaction)
-                
-                await User.updateOne({ _id: transaction.userId }, { $inc: { credits: transaction.credits } })
-                try {
+                    const transaction = await Transaction.findOne({ _id: transactionId, isPaid: false })
+                    console.log(transaction)
+                    
+                    await User.updateOne({ _id: transaction.userId }, { $inc: { credits: transaction.credits } })
+                    
                     transaction.isPaid = true
                     await transaction.save()
                     console.log(transaction.isPaid)
-                   
-                    return res.json({ success: true })
-                } catch (error) {
-                    console.log(error.message)
+                }else{
+                    return res.json({ received: true, message: 'ignored' })
                     
                 }
 
-                
-                
-                
-                    
-                
-            }else{
-                return res.json({ success: true })
-            }
-            break;
-                
-            }
-        }
-        return res.json({ success: true})
 
+                break;
+            }
         
-            
+            default:
+                console.log(unhandled)
+                break;  
+        }
+        return res.json({ received: true, message: 'handled' })
     } catch (error) {
         console.log(error)
-        return res.json({ success: false, message: error.message })
+        Response.status(500).json({ received: false, message: error.message })
     }
+    
     
 }
