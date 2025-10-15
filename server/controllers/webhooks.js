@@ -26,6 +26,10 @@ export const webhooks = async (req, res) => {
                 const transactionId = payload.event.metadata
                 const appId = payload.event.metadata
 
+
+                console.log(transactionId)
+                console.log(appId)
+
             
 
                 if(appId === 'ivanchat'){
