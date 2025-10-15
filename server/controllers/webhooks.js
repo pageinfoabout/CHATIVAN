@@ -37,11 +37,13 @@ export const webhooks = async (req, res) => {
 
                 if(appId === 'ivanchat'){
                 const transaction = await Transaction.findOne({ _id: transactionId, isPaid: false })
+                console.log(transaction)
                 
                 await User.updateOne({ _id: transaction.userId }, { $inc: { credits: transaction.credits } })
                 try {
                     transaction.isPaid = true
                     await transaction.save()
+                    console.log(transaction.isPaid)
                    
                     return res.json({ success: true })
                 } catch (error) {
