@@ -19,11 +19,17 @@ export const webhooks = async (req, res) => {
     } 
     console.log(payload) 
     try {
-        switch (payload.event.type) {
+        switch (payload.event) {
             case 'payment.succeeded':{
+                
                 
                 const transactionId = payload.event.metadata.transactionId
                 const appId = payload.event.metadata.appId
+
+
+                console.log(transactionId)
+                console.log(appId)
+                console.log(payload.event)
 
                 if(appId !== 'ivanchat'){
                 const transaction = await Transaction.findOne({ _id: transactionId, isPaid: false })
